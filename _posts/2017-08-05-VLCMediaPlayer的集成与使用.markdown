@@ -136,8 +136,8 @@ self.vlcPlayerView.rotateBlock = ^(NSInteger result){
         }
     };
 ```
-其他实现可参考demo工程中详细代码。
+其他实现可参考demo工程中详细代码。
 
 注：demo中MoblieVLCKit.framework文件过大暂不上传，请自行下载替换。
 
-本文参考[http://www.jianshu.com/p/178627b085c3](http://www.jianshu.com/p/178627b085c3)
+本文参考[http://www.jianshu.com/p/178627b085c3](http://www.jianshu.com/p/178627b085c3)
