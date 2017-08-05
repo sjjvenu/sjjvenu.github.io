@@ -105,7 +105,9 @@ VLCMediaPlayer代理
 ```
 示例Demo工程
 ======
-Demo下载地址:[https://github.com/sjjvenu/VLCPlayerDemo]((https://github.com/onevcat/vno-jekyll))
+
+Demo下载地址:[https://github.com/sjjvenu/VLCPlayerDemo](https://github.com/sjjvenu/VLCPlayerDemo)
+
 其中VLCPlayer为播放器类，VLCPlayerView为播放器View容器，VLCViewController为支持presentViewController方式弹出的controller，SCVideoMainViewController为支持pushViewController方式弹出的controller。
 
 Demo中无需支持横屏模式即可横屏全屏播放，利用将视图旋转90度达到效果，具体实现考如下代码：
