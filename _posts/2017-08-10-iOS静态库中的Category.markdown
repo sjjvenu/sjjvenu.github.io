@@ -12,7 +12,7 @@ date: 2017-08-10 17:32:24.000000000 +08:00
 
 &emsp;&emsp;苹果官方文档中的这个 Q&A QA1490:Building Objective-C static libraries with categories 已经说明了这个问题产生的原因：
 
-    这个异常是因为标准 UNIX 静态库、linker 以及 Objective-C 的动态性三者之间的实现导致的，Objective-C 不会为方法定义 linker symbols，它只会为每一个类定义 linker symbols。如果你使用 category 扩展了一个已经存在的类，那么 linker 不会将已有类的实现跟 category 的实现连接起来，这就导致了调用静态库中 category 中新增加的方法时抛出 selector not recognized 的异常。
+&emsp;&emsp;这个异常是因为标准 UNIX 静态库、linker 以及 Objective-C 的动态性三者之间的实现导致的，Objective-C 不会为方法定义 linker symbols，它只会为每一个类定义 linker symbols。如果你使用 category 扩展了一个已经存在的类，那么 linker 不会将已有类的实现跟 category 的实现连接起来，这就导致了调用静态库中 category 中新增加的方法时抛出 selector not recognized 的异常。
 
 &emsp;&emsp;当你组建（build）一个动态库（.dylib）、一个framework、一个可加载的bundle（bundle）或者一个可执行的二进制文件的时候，这些文件被链接器链接到一起来生成一些操作系统认为“可用的”的东西，例如一些可以直接载入指定内存地址的东西。
        
@@ -35,7 +35,7 @@ date: 2017-08-10 17:32:24.000000000 +08:00
 &emsp;&emsp;所以，apple建议我们为要最终程序的linker加上-all_load或者-force_load参数。
 
 &emsp;&emsp;-all_load选项强制linker加载所有包中的所有对象文件，即使文件中没有Objective-C代码也加载。-force_load是从Xcode3.2开始有的，它使得linker获取包加载的控制权，每个-force_load参数后面都必须跟上一个包的路径，然后这个包的所有对象文件都会被加载。
-```objc
+```
 -force_load $(BUILT_PRODUCTS_DIR)/<library_name.a>
 ```
 3、解决linker的bug
