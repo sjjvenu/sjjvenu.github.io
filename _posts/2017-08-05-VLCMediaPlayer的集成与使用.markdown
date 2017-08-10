@@ -4,12 +4,12 @@ title: VLCMediaPlayer的集成与使用
 date: 2017-08-05 16:26:24.000000000 +08:00
 ---
 
-VLC Media Player (VideoLAN) 为 Windows、Linux、OS X、Android、iOS、Windows Phone等平台提供一个视频播放器、解码器。它可以播放来自网络、摄像头、磁盘、光驱的文件，支持包括MPEG 1/2/4, H264, VC-1, DivX, WMV, Vorbis, AC3, AAC等格式的解码。在 Windows 和 Linux 上的 VLC 是使用C++/Qt写成，提供了一致的用户体验。同时 VLC 还专门为 OS X 提供了原生版本，OS X 版的 VLC 的用户界面使用Cocoa框架编写，在 OS X 下拥有卓越的原生体验。
+&emsp;&emsp;VLC Media Player (VideoLAN) 为 Windows、Linux、OS X、Android、iOS、Windows Phone等平台提供一个视频播放器、解码器。它可以播放来自网络、摄像头、磁盘、光驱的文件，支持包括MPEG 1/2/4, H264, VC-1, DivX, WMV, Vorbis, AC3, AAC等格式的解码。在 Windows 和 Linux 上的 VLC 是使用C++/Qt写成，提供了一致的用户体验。同时 VLC 还专门为 OS X 提供了原生版本，OS X 版的 VLC 的用户界面使用Cocoa框架编写，在 OS X 下拥有卓越的原生体验。
 
 VLC集成
 ======
 
-在iOS下，我们可以很方便的使用VLC，因为它经行了优秀的封装，源码中最核心的部分被封装成了独立的库（MoblieVLVKit.framework库），它是基于FFmpeg，Live555提供完整的媒体播放库，所以整一个库体积还是比较大（目前已经超过600M了），不过并不会太影响App的大小，经行App打包发布的是会自动超级压缩的。经过测试它比使用FFmpeg库仅仅是多7M左右的大小。
+&emsp;&emsp;在iOS下，我们可以很方便的使用VLC，因为它经行了优秀的封装，源码中最核心的部分被封装成了独立的库（MoblieVLVKit.framework库），它是基于FFmpeg，Live555提供完整的媒体播放库，所以整一个库体积还是比较大（目前已经超过600M了），不过并不会太影响App的大小，经行App打包发布的是会自动超级压缩的。经过测试它比使用FFmpeg库仅仅是多7M左右的大小。
 
 VLC cocoapods方式集成
 ------------
@@ -21,7 +21,7 @@ VLC cocoapods方式集成
 
 直接引用
 ------------
-下载MoblieVLCKit.framework直接链接进行编译
+&emsp;&emsp;下载MoblieVLCKit.framework直接链接进行编译
 
 注意：由于MoblieVLCKit.framework不支持bitcode，在工程中需要关闭bitcode，即在TARGETS->Bulid Settings->Build Options->Enable Bitcode设置为NO。
 
@@ -29,9 +29,8 @@ VLC使用
 ======
 VLCMediaPlayer
 ------------
-VCL对象，管理着播放的开始暂停等操作，有着几个代理方法可以经行状态和时间的监听回调
+&emsp;&emsp;VCL对象，管理着播放的开始暂停等操作，有着几个代理方法可以经行状态和时间的监听回调
 VLCMediaPlayer属性
-------------
 ```objc
 // 播放设置，比如设置播放路径是本地播放还是网络播放，以及播放的画面映射到哪个View
 @property (NS_NONATOMIC_IOSONLY, strong) VLCMedia *media;
@@ -73,7 +72,7 @@ VLCMediaPlayer代理
 // 播放时间改变的回调
 - (void)mediaPlayerTimeChanged:(NSNotification *)aNotification;
 ```
-获取视频截图
+&emsp;&emsp;获取视频截图
 ```objc
 //使用 AVAssetImageGenerator 获取缩略图
 -(UIImage *)thumbnailImageRequest:(CGFloat )timeBySecond{
@@ -104,13 +103,13 @@ VLCMediaPlayer代理
 }
 ```
 示例Demo工程
-======
+---
 
-Demo下载地址:[https://github.com/sjjvenu/VLCPlayerDemo](https://github.com/sjjvenu/VLCPlayerDemo)
+&emsp;&emsp;Demo下载地址:[https://github.com/sjjvenu/VLCPlayerDemo](https://github.com/sjjvenu/VLCPlayerDemo)
 
-其中VLCPlayer为播放器类，VLCPlayerView为播放器View容器，VLCViewController为支持presentViewController方式弹出的controller，SCVideoMainViewController为支持pushViewController方式弹出的controller。
+&emsp;&emsp;其中VLCPlayer为播放器类，VLCPlayerView为播放器View容器，VLCViewController为支持presentViewController方式弹出的controller，SCVideoMainViewController为支持pushViewController方式弹出的controller。
 
-Demo中无需支持横屏模式即可横屏全屏播放，利用将视图旋转90度达到效果，具体实现考如下代码：
+&emsp;&emsp;Demo中无需支持横屏模式即可横屏全屏播放，利用将视图旋转90度达到效果，具体实现考如下代码：
 ```objc
 self.vlcPlayerView.rotateBlock = ^(NSInteger result){
         if (result == 0) { // 横屏
@@ -136,7 +135,7 @@ self.vlcPlayerView.rotateBlock = ^(NSInteger result){
         }
     };
 ```
-其他实现可参考demo工程中详细代码。
+&emsp;&emsp;其他实现可参考demo工程中详细代码。
 
 注：demo中MoblieVLCKit.framework文件过大暂不上传，请自行下载替换。
 

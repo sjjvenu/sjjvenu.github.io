@@ -4,21 +4,21 @@ title: iOS10下打印NSLog syslog信息
 date: 2017-07-27 10:32:24.000000000 +08:00
 ---
 
-在iO10以前的版本越狱机器可以用socat方便的打印出NSLog信息，但在iOS10下由于日志系统发生了改变，以前一些打印方法失效。
+&emsp;&emsp;在iO10以前的版本越狱机器可以用socat方便的打印出NSLog信息，但在iOS10下由于日志系统发生了改变，以前一些打印方法失效。
 
-The logging system has changed in iOS 10. Apple now uses what it calls "Unified Logging". Below are links to a brief overview, as well as a WWDC session covering the topic:
+&emsp;&emsp;The logging system has changed in iOS 10. Apple now uses what it calls "Unified Logging". Below are links to a brief overview, as well as a WWDC session covering the topic:
 
-https://developer.apple.com/reference/os/logging
+* https://developer.apple.com/reference/os/logging
 
-https://developer.apple.com/videos/play/wwdc2016/721/
+* https://developer.apple.com/videos/play/wwdc2016/721/
 
-Note that Apple claims that it is much more efficient (as it does not write to disk), and so it appears that there is no need to ever turn it off.
+&emsp;&emsp;Note that Apple claims that it is much more efficient (as it does not write to disk), and so it appears that there is no need to ever turn it off.
 
 
 
-iOS10下可用deviceconsole这个工具打印系统日志，安装方法从git上下载源码https://github.com/MegaCookie/deviceconsole并编译，将编译好的二进制文件，放到/usr/local/bin下并保证执行权限。
+&emsp;&emsp;iOS10下可用deviceconsole这个工具打印系统日志，安装方法从git上下载源码https://github.com/MegaCookie/deviceconsole并编译，将编译好的二进制文件，放到/usr/local/bin下并保证执行权限。
 
-deviceconsole是需要通过usb来连接手机，在终端中运行deviceconsole，并连上手机，操作说明如下：
+&emsp;&emsp;deviceconsole是需要通过usb来连接手机，在终端中运行deviceconsole，并连上手机，操作说明如下：
 
 ```
 Usage: deviceconsole [options]
@@ -37,7 +37,7 @@ Control-C to disconnect
 
 ```
 
-比如打印iOSRETargetApp这个app的信息，可用deviceconsole -i -f iOSRETargetApp命令，打印结果如下：
+&emsp;&emsp;比如打印iOSRETargetApp这个app的信息，可用deviceconsole -i -f iOSRETargetApp命令，打印结果如下：
 
 ```
 dxs-Mac-mini:bin tdx$ deviceconsole -i -f iOSRETargetApp

@@ -7,11 +7,11 @@ date: 2017-08-09 17:32:24.000000000 +08:00
 
 Block的实现
 ---------
-block 的数据结构定义如下
+&emsp;&emsp;block 的数据结构定义如下
 
 ![image](http://blog.devtang.com/images/block-struct.jpg)
 
-对应的结构体定义如下：
+&emsp;&emsp;对应的结构体定义如下：
 ```objc
 struct Block_descriptor {
     unsigned long int reserved;
@@ -29,7 +29,7 @@ struct Block_layout {
 };
 ```
 
-通过该图，我们可以知道，一个 block 实例实际上由 6 部分构成：
+&emsp;&emsp;通过该图，我们可以知道，一个 block 实例实际上由 6 部分构成：
 
 1、isa 指针，所有对象都有该指针，用于实现对象相关的功能。
 
@@ -43,10 +43,10 @@ struct Block_layout {
 
 6、variables，capture 过来的变量，block 能够访问它外部的局部变量，就是因为将这些变量（或变量的地址）复制到了结构体中。
 
-block的声明与定义如下图:
+&emsp;&emsp;block的声明与定义如下图:
 ![image](http://upload-images.jianshu.io/upload_images/783864-3ad5d92333756aa7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-首先我们来看四个函数
+&emsp;&emsp;首先我们来看四个函数
 ```objc
 void test1() {
     int a = 10; 
@@ -88,9 +88,9 @@ void test4() {
 }
 ```
 
-使用clang将test1函数编译成c++代码,在命令行中输入clang -rewrite-objc main.c即可在目录中看到 clang 输出了一个名为 main.cpp 的文件。该文件就是 block在c++语言实现。
+&emsp;&emsp;使用clang将test1函数编译成c++代码,在命令行中输入clang -rewrite-objc main.c即可在目录中看到 clang 输出了一个名为 main.cpp 的文件。该文件就是 block在c++语言实现。
 
-注：如若碰到'UIKit/UIKit.h' file not found之类的错误，请参考[Objective-C编译成C++代码报错](http://www.jianshu.com/p/43a09727eb2c)
+&emsp;&emsp;注：如若碰到'UIKit/UIKit.h' file not found之类的错误，请参考[Objective-C编译成C++代码报错](http://www.jianshu.com/p/43a09727eb2c)
 
 ```c++
 #ifndef BLOCK_IMPL
@@ -140,16 +140,16 @@ int main(int argc, char * argv[]) {
 }
 static struct IMAGE_INFO { unsigned version; unsigned flag; } _OBJC_IMAGE_INFO = { 0, 2 };
 ```
-可以看到a是作为值传递进去的。
-接下来我们打印这3处a的值，结果如下：
+&emsp;&emsp;可以看到a是作为值传递进去的。
+&emsp;&emsp;接下来我们打印这3处a的值，结果如下：
 ```
 2017-08-09 18:51:24.427 TestBounds[21998:295458] block定义前：0x7fff5278c57c
 2017-08-09 18:51:24.481 TestBounds[21998:295458] block定义后：0x7fff5278c57c
 2017-08-09 18:51:24.481 TestBounds[21998:295458] block内部：0x60000004fc80
 ```
-a在block中和block外部地址是不一样的，外面的地址是在栈中，而在ARC下block访问了外部变量会拷贝一份到堆上，此时的block并不会对变量a造成影响。
+&emsp;&emsp;a在block中和block外部地址是不一样的，外面的地址是在栈中，而在ARC下block访问了外部变量会拷贝一份到堆上，此时的block并不会对变量a造成影响。
 
-再来看看test2函数编译成c++代码。
+&emsp;&emsp;再来看看test2函数编译成c++代码。
 
 ```c++
 struct __Block_byref_a_0 {
@@ -197,24 +197,24 @@ int main(int argc, char * argv[]) {
     test2();
 }
 ```
-可以看到a是作为引用传入函数中去，这是因为使用了__block关键字造成的效果。我们再来打印a的地址。
+&emsp;&emsp;可以看到a是作为引用传入函数中去，这是因为使用了__block关键字造成的效果。我们再来打印a的地址。
 ```
 2017-08-09 19:04:30.735 TestBounds[22354:303315] block定义前：0x7fff5b540578
 2017-08-09 19:04:30.863 TestBounds[22354:303315] block定义后：0x60800003fe58
 2017-08-09 19:04:30.863 TestBounds[22354:303315] block内部：0x60800003fe58
 ```
-可以看到使用__block定义的变量在block中拷贝到堆上去后对后来的a的地址也产生了变化，a在定义前是栈区，但只要进入了block区域，就变成了堆区。
+&emsp;&emsp;可以看到使用__block定义的变量在block中拷贝到堆上去后对后来的a的地址也产生了变化，a在定义前是栈区，但只要进入了block区域，就变成了堆区。
 总结如下：
 
-1、对于 block 外的变量引用，block 默认是将其复制到其数据结构中来实现访问的
+* 对于 block 外的变量引用，block 默认是将其复制到其数据结构中来实现访问的
 
-2、对于用 __block 修饰的外部变量引用，block 是复制其引用地址来实现访问的
+* 对于用 __block 修饰的外部变量引用，block 是复制其引用地址来实现访问的
 
-利用上述方法也可以解释test3和test4输出结果原因。
+&emsp;&emsp;利用上述方法也可以解释test3和test4输出结果原因。
 
 Block的内存管理
 -------
-在 Objective-C 语言中，一共有 3 种类型的 block：
+&emsp;&emsp;在 Objective-C 语言中，一共有 3 种类型的 block：
 
 1、_NSConcreteGlobalBlock 全局的静态 block，不会访问任何外部变量。
 
@@ -222,31 +222,31 @@ int main(int argc, char * argv[]) {
 
 3、_NSConcreteMallocBlock 保存在堆中的 block，当引用计数为 0 时会被销毁。
 
-而在MRC和ARC中有些区别
+&emsp;&emsp;而在MRC和ARC中有些区别
 无论当前环境是ARC还是MRC，只要block没有访问外部变量，block始终在全局区
 
 MRC情况下：
 
-    block如果如果访问外部变量，block在栈里
+* block如果如果访问外部变量，block在栈里
 
-    不能对block使用retain,否则不能保存在堆里
+* 不能对block使用retain,否则不能保存在堆里
 
-    只有使用copy才能放在堆里
+* 只有使用copy才能放在堆里
 
 ARC情况下：
 
-    block如果访问外部变量，block在堆里
+* block如果访问外部变量，block在堆里
 
-    block可以使用copy和strong,并且block是一个对象
+* block可以使用copy和strong,并且block是一个对象
 
 
 Block的循环引用
 --------
-如果要在block中直接使用外部强指针会发生循环引用，使用以下代码在block外部实现可解决
+&emsp;&emsp;如果要在block中直接使用外部强指针会发生循环引用，使用以下代码在block外部实现可解决
 ```objc
 __weak typeof(self) weakSelf = self;
 ```
-如果在block内部使用延时操作还使用弱指针的话会取不到弱指针，此时需要在block内部再将弱指针强引用一下
+&emsp;&emsp;如果在block内部使用延时操作还使用弱指针的话会取不到弱指针，此时需要在block内部再将弱指针强引用一下
 ```objc
 __strong typeof(self) strongSelf = weakSelf;
 ```
