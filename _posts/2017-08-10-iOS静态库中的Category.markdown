@@ -40,7 +40,7 @@ date: 2017-08-10 17:32:24.000000000 +08:00
 ```
 3、解决linker的bug
 
-* 参考facebook的解决方案
++ 参考facebook的解决方案
 ```objc
 /**
  * Add this macro before each category implementation, so we don't have to use
@@ -65,7 +65,7 @@ TT_FIX_CATEGORY_BUG(NSArrayAdditions)
 
 ```
 
-* 利用全局函数
++ 利用全局函数
 
 &emsp;&emsp;在只有category的源文件里添加Fakesymbol。如果你想在runtime里使用category，一定要确保你以某种方法在编译时引用了fake symbol，这会使得对象文件以及它里面的OC代码被载入。例如，它可以是一个有空函数体的函数，也可以是一个被访问的全局变量（例如一个全局的int变量，只要它被读或者写了一次就足够了）。和上面其他的解决方法不一样，这种解决方法可以控制哪些category可以在runtime里被编译后的代码使用（可以通过使用这个符号，使它们被链接并变得可用；也可以不使用这个符号，这样链接器就会忽略它）。
  
