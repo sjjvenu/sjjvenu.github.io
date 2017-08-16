@@ -7,13 +7,13 @@ date: 2017-08-16 17:32:24.000000000 +08:00
 
 &emsp;&emsp;在iOS开发中，能够随意更改app在真机上的文件可方便我们调试app，但自从iOS9以后app目录也越来越不好获取了。当然首先你得需要一个越狱手机，关于手机如何越狱，以下列出最近几个版本的越狱方法:
 
-[iOS9.0-iOS9.1](http://9.pangu.io/)盘古官网
+[iOS9.0-iOS9.1](http://9.pangu.io/)盘古官网
 
-[iOS9.2-iOS9.3.3](http://www.pangu.io/?flag=cn)盘古官网会跳转到pp助手，使用win版pp助手点击一键越狱即可
+[iOS9.2-iOS9.3.3](http://www.pangu.io/?flag=cn)盘古官网会跳转到pp助手，使用win版pp助手点击一键越狱即可
 
-[iOS10.0.0-iOS10.2](https://github.com/kpwn/yalu102)此为越狱源码，开发者可自行下载编译，安装到手机上，然后根据提示来进行越狱
+[iOS10.0.0-iOS10.2](https://github.com/kpwn/yalu102)此为越狱源码，开发者可自行下载编译，安装到手机上，然后根据提示来进行越狱
 
-&emsp;&emsp;app沙盒目录结构图
+&emsp;&emsp;app沙盒目录结构图
 
 ![image](https://developer.apple.com/library/content/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/art/ios_app_layout_2x.png)
 
@@ -26,11 +26,11 @@ date: 2017-08-16 17:32:24.000000000 +08:00
 NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 NSString* cPath = [paths objectAtIndex:0];
 ```
-&emsp;&emsp;cPath即为该app沙盒下的Document文件夹，更改NSSearchPathForDirectoriesInDomains的第一个参数，相应的可以打印出其他文件夹。但是这种方式虽然简单，但是必须要有源码，有很大的限制，接下来介绍的两种方法就没有这种限制了。
+&emsp;&emsp;cPath即为该app沙盒下的Document文件夹，更改NSSearchPathForDirectoriesInDomains的第一个参数，相应的可以打印出其他文件夹。但是这种方式虽然简单，但是必须要有源码，有很大的限制，接下来介绍的两种方法就没有这种限制了。
 
-2、辅助手机管理软件
+2、辅助手机管理软件
 ---
-&emsp;&emsp;这里推荐iMazing或者iTools Pro，需要在越狱环境下的cydia中安装House Arrest Fix，即可找到app的沙盒目录。
+&emsp;&emsp;这里推荐iMazing或者iTools Pro，需要在越狱环境下的cydia中安装House Arrest Fix，即可找到app的沙盒目录。
 
 House Arrest Fix
 
@@ -46,22 +46,23 @@ iTools Pro
 
 3、利用越狱插件来获取
 ---
-&emsp;&emsp;上述的几种方案在高版本的iOS系统中都只能获取Documents、Library和Temp目录，而不能获取.app目录，而利用越狱插件则可以获取.app目录。
+&emsp;&emsp;上述的几种方案在高版本的iOS系统中都只能获取Documents、Library和Temp目录，而不能获取.app目录，而利用越狱插件则可以获取.app目录。
 
 &emsp;&emsp;首先我们需要一些准备工作。
 
-* 打开ssh通道:以iOS10.2安装yalu102 B7版本为例，B7版本自带ssh，其他系统版本越狱系统请参考其他教程安装ssh。在cydia安装filza,打开目录var/containers/Bundle/Application其中就可以看到用户安装的程序.app目录了。然后在yalu102.app目录中,往下滑找到dropbear.plist 用属性表编辑器打开。其中的ProgramArguments项展开，把ltem4中的内容修改成22。然后重启手机就可以使用wifi远程登录手机了。另外也可以通过usb去登录手机，参考[使用ssh 访问越狱iPhone的两种方式](http://blog.csdn.net/woaizijiheni/article/details/49181295)
+* 打开ssh通道:以iOS10.2安装yalu102 B7版本为例，B7版本自带ssh，其他系统版本越狱系统请参考其他教程安装ssh。在cydia安装filza,打开目录var/containers/Bundle/Application其中就可以看到用户安装的程序.app目录了。然后在yalu102.app目录中,往下滑找到dropbear.plist 用属性表编辑器打开。其中的ProgramArguments项展开，把ltem4中的内容修改成22。然后重启手机就可以使用wifi远程登录手机了。另外也可以通过usb去登录手机，参考[使用ssh 访问越狱iPhone的两种方式](http://blog.csdn.net/woaizijiheni/article/details/49181295)
 
 ![image](http://wx1.sinaimg.cn/mw690/a9a6744agy1filki4gzesj20ku112aew.jpg)
 ![image](http://www.fengimg.com/data/attachment/forum/201702/01/215808a7pejtvto1t21m7t.png)
 
 &emsp;&emsp;注：此时通过filza其实已经可以看到.app目录了，另外也可以打开     var/mobile/Containers/Data/Application，这个目录下就是各个app的Documents、Library和Temp目录。以下的方法利用终端打印出沙盒目录地址。
 
-* 安装Cycript插件
+* 安装Cycript插件
 
 ![image](http://wx1.sinaimg.cn/mw690/a9a6744agy1filkyjvq85j20ku112wkk.jpg)
 
-* 开始查找沙盒目录，以StoreApp为例。：首先在iOS中关掉所有StoreApp，然后打开Target，接着ssh到 iOS上，打印出所有进程，如下：
+* 开始查找沙盒目录，以StoreApp为例。：首先在iOS中关掉所有StoreApp，然后打开Target，保持电脑和手机在同一网段，接着ssh到 iOS上，打印出所有进程，如下：
+
 ```
 snakeninnysiMac:~ snakeninny$ ssh root@iOSIP FunMaker-5:~ root# ps -e
 
@@ -77,11 +78,14 @@ PID TTY TIME CMD
 
 0:00.03 -sh 0:00.01 ps –e
 ```
+
 &emsp;&emsp;因为iOS上只打开了一个StoreApp所以唯一的那个含“/var/mobile/Containers/Bundle/Application/”字样的 结果就是TargetApp可执行文件的全路径，也就是.app文件的路径。
 &emsp;&emsp;用Cycript找出TargetApp的Documents目录路径。StoreApp的Documents目录位 于/var/mobile/Containers/Data/Application/YYYYYYYYYYYY-YYYY-YYYY–YYYYYYYYYYYY/下，Y与 之前的X值不同，而且这次PS也帮不上忙了。因此， 需要借助强大的Cycript，让App告诉我们Documents的路径。命令如下：
+
 ```
 FunMaker-5:~ root# cycript -p TargetApp cy# [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask][0] #"file:///var/mobile/Containers/Data/Application/D41C434363AA-4BFF-904B-2146128611EE/Documents/"
 ```
+
 &emsp;&emsp;这样就找出了Documents路径，而Library和Temp和Documents在同一目录下，这样所有的沙盒路径全部找到。
 
 
