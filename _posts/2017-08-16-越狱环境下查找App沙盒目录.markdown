@@ -83,7 +83,8 @@ PID TTY TIME CMD
 &emsp;&emsp;用Cycript找出TargetApp的Documents目录路径。StoreApp的Documents目录位 于/var/mobile/Containers/Data/Application/YYYYYYYYYYYY-YYYY-YYYY–YYYYYYYYYYYY/下，Y与 之前的X值不同，而且这次PS也帮不上忙了。因此， 需要借助强大的Cycript，让App告诉我们Documents的路径。命令如下：
 
 ```
-FunMaker-5:~ root# cycript -p TargetApp cy# [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask][0] #"file:///var/mobile/Containers/Data/Application/D41C434363AA-4BFF-904B-2146128611EE/Documents/"
+FunMaker-5:~ root# cycript -p TargetApp cy# [[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask][0] 
+#"file:///var/mobile/Containers/Data/Application/D41C434363AA-4BFF-904B-2146128611EE/Documents/"
 ```
 
 &emsp;&emsp;这样就找出了Documents路径，而Library和Temp和Documents在同一目录下，这样所有的沙盒路径全部找到。
