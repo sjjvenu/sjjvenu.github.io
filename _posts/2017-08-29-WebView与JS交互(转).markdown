@@ -226,6 +226,7 @@ JSExportAs(add, - (NSInteger)add:(NSInteger)a b:(NSInteger)b);
 ```
 内存管理
 ---
+
 &emsp;&emsp;现在来说说内存管理的注意点，OC使用的ARC，JS使用的是垃圾回收机制，并且所有的引用是都强引用，不过JS的循环引用，垃圾回收会帮它们打破。JavaScriptCore里面提供的API，正常情况下，OC和JS对象之间内存管理都无需我们去关心。不过还是有几个注意点需要我们去留意下。
 #### 1、不要在block里面直接使用context，或者使用外部的JSValue对象。
 ```
