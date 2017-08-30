@@ -200,9 +200,10 @@ Objective-C type  |   JavaScript type
 
 }
 ```
-&emsp;emsp;demo定义了一个两个数相加的方法，还有一个保存结果的变量。在JS中进行调用这个对象的方法，并将结果赋值sum。唯一要注意的是OC的函数命名和JS函数命名规则问题。协议中定义的是add: b:，但是JS里面方法名字是addB(a,b)。可以通过JSExportAs这个宏转换成JS的函数名字。
 
-&emsp;emsp;修改下代码：
+&emsp;&emsp;demo定义了一个两个数相加的方法，还有一个保存结果的变量。在JS中进行调用这个对象的方法，并将结果赋值sum。唯一要注意的是OC的函数命名和JS函数命名规则问题。协议中定义的是add: b:，但是JS里面方法名字是addB(a,b)。可以通过JSExportAs这个宏转换成JS的函数名字。
+
+&emsp;&emsp;修改下代码：
 ```objc
 @protocol JSExportTest <JSExport>
 //用宏转换下，将JS函数名字指定为add；
@@ -225,7 +226,7 @@ JSExportAs(add, - (NSInteger)add:(NSInteger)a b:(NSInteger)b);
 ```
 内存管理
 ---
-emsp;emsp;现在来说说内存管理的注意点，OC使用的ARC，JS使用的是垃圾回收机制，并且所有的引用是都强引用，不过JS的循环引用，垃圾回收会帮它们打破。JavaScriptCore里面提供的API，正常情况下，OC和JS对象之间内存管理都无需我们去关心。不过还是有几个注意点需要我们去留意下。
+&emsp;&emsp;现在来说说内存管理的注意点，OC使用的ARC，JS使用的是垃圾回收机制，并且所有的引用是都强引用，不过JS的循环引用，垃圾回收会帮它们打破。JavaScriptCore里面提供的API，正常情况下，OC和JS对象之间内存管理都无需我们去关心。不过还是有几个注意点需要我们去留意下。
 #### 1、不要在block里面直接使用context，或者使用外部的JSValue对象。
 ```
     //错误代码：
