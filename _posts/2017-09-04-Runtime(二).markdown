@@ -1,0 +1,264 @@
+---
+layout: post
+title: Runtime(二)
+date: 2017-09-04 15:32:24.000000000 +08:00
+---
+
+
+Metaprogramming with Properties(获取属性列表)
+------------
+&emsp;&emsp;通过runtime方法获取属性列表：
+```objc
+#pragma mark - NSCoding
+
+- (id)initWithCoder:(NSCoder *)decoder {
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+    unsigned int count;
+    objc_property_t *properties = class_copyPropertyList([self class], &count);
+    for (NSUInteger i = 0; i < count; i++) {
+        objc_property_t property = properties[i];
+        NSString *key = [NSString stringWithUTF8String:property_getName( ←-
+        property)];
+        [self setValue:[decoder decodeObjectForKey:key]
+        forKey:key];
+    }
+    free(properties);
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder {
+    unsigned int count;
+    objc_property_t *properties = class_copyPropertyList([self class], &count);
+    for (NSUInteger i = 0; i < count; i++) {
+        objc_property_t property = properties[i];
+        NSString *key = [NSString stringWithUTF8String:property_getName( ←-
+        property)];
+        [coder encodeObject:[self valueForKey:key] forKey:key];
+    }
+    free(properties);
+}
+```
+Associated Objects(关联对象)
+------------
+&emsp;&emsp;objc_setAssociatedObject在runtime时设置关联对象，objc_getAssociatedObject获取关联对象
+
+```objc
+@interface NSObject (AssociatedObject)
+@property (nonatomic, strong) id associatedObject;
+@end
+
+@implementation NSObject (AssociatedObject)
+
+@dynamic associatedObject;
+
+- (void)setAssociatedObject:(id)object {
+    objc_setAssociatedObject(self, @selector(associatedObject), object,OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (id)associatedObject {
+    return objc_getAssociatedObject(self, @selector(associatedObject));
+}
+```
+
+Dynamically Adding a Method（动态添加方法）
+-----------
+&emsp;&emsp;原始添加一个方法代码如下:
+
+```objc
+@interface NSObject ()
+
+- (NSString *)greetingWithName:(NSString *)name;
+
+@end
+
+@implementation NSObject ()
+
+- (NSString *)greetingWithName:(NSString *)name {
+
+    return [NSString stringWithFormat:@"Hello, %@!", name];
+
+}
+
+@end
+```
+&emsp;&emsp;使用runtime添加方法:
+```objc
+Class c = [NSObject class];
+
+IMP greetingIMP = imp_implementationWithBlock((NSString *)^(id self, NSString *name){
+    return [NSString stringWithFormat:@"Hello, %@!", name];
+});
+
+const char *greetingTypes = [[NSString stringWithFormat:@"%s%s%s", @encode(id),@encode(id), @encode(SEL)] UTF8String];
+
+class_addMethod(c, @selector(greetingWithName:), greetingIMP, greetingTypes);
+```
+
+Method Swizzling（方法替换）
+----------
+&emsp;&emsp;Method Swizzling，顾名思义，就是将两个方法的实现交换，即由原来的A－AImp、B－BImp对应关系变成了A－BImp、B－AImp。
+
+&emsp;&emsp;那为什么无缘无故要将两个方法的实现交换呢？
+
+1、hook：在开发中，经常用到系统提供的API，但出于某些需求，我们可能会对某些方法的实现不太满意，就想去修改它以达到更好的效果，Hook由此诞生。iOS开发会使用Method Swizzling来达到这样的效果：当特定的消息发出时，会先到达我们提前预置的消息处理函数，取得控制权来加工消息以及后续处理。
+
+2、面向切面编程：实际上，要改变一个方法的实现有几种方法，比如继承重写、分类重写等等，但在开发中，往往由于业务需要需要在代码中添加一些琐碎的、跟主要业务逻辑无关的东西，使用这两者都有局限性，使用方法交换动态給指定的方法添加代码以达到解耦的效果。
+
+#### Method Swizzling原理
+&emsp;&emsp;每个类都维护一个方法（Method）列表，Method则包含SEL和其对应IMP的信息，方法交换做的事情就是把SEL和IMP的对应关系断开，并和新的IMP生成对应关系。
+
+#### Method Swizzling相关函数介绍
+```objc
+//获取通过SEL获取一个方法
+class_getInstanceMethod
+
+//获取一个方法的实现
+method_getImplementation
+
+//获取一个OC实现的编码类型
+method_getTypeEncoding
+
+//給方法添加实现
+class_addMethod
+
+//用一个方法的实现替换另一个方法的实现
+class_replaceMethod
+
+//交换两个方法的实现
+method_exchangeImplementations
+```
+#### Method Swizzling实现的过程
+```objc
+static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        //case1: 替换实例方法
+        Class selfClass = [self class];
+        //case2: 替换类方法
+        Class selfClass = object_getClass([self class]);
+
+        //源方法的SEL和Method
+        SEL oriSEL = @selector(viewWillAppear:);
+        Method oriMethod = class_getInstanceMethod(selfClass, oriSEL);
+
+        //交换方法的SEL和Method
+        SEL cusSEL = @selector(customViewWillApper:);
+        Method cusMethod = class_getInstanceMethod(selfClass, cusSEL);
+
+        //先尝试給源方法添加实现，这里是为了避免源方法没有实现的情况
+        BOOL addSucc = class_addMethod(selfClass, oriSEL, method_getImplementation(cusMethod), method_getTypeEncoding(cusMethod));
+        if (addSucc) {
+            //添加成功：将源方法的实现替换到交换方法的实现
+            class_replaceMethod(selfClass, cusSEL, method_getImplementation(oriMethod), method_getTypeEncoding(oriMethod));
+        }else {
+            //添加失败：说明源方法已经有实现，直接将两个方法的实现交换即可
+            method_exchangeImplementations(oriMethod, cusMethod);
+        }
+    });
+```
+#### Method Swizzling注意事项
+1、方法交换应该保证唯一性和原子性
+唯一性：应该尽可能在＋load方法中实现，这样可以保证方法一定会调用且不会出现异常。
+原子性：使用dispatch_once来执行方法交换，这样可以保证只运行一次。
+
+2、一定要调用原始实现
+由于iOS的内部实现对我们来说是不可见的，使用方法交换可能会导致其代码结构改变，而对系统产生其他影响，因此应该调用原始实现来保证内部操作的正常运行。
+
+3、方法名必须不能产生冲突
+这个是常识，避免跟其他库产生冲突。
+
+4、做好记录
+记录好被影响过的方法，不然时间长了或者其他人debug代码时候可能会对一些输出信息感到困惑。
+
+5、如果非迫不得已，尽量少用方法交换
+虽然方法交换可以让我们高效地解决问题，但是如果处理不好，可能会导致一些莫名其妙的bug。
+
+Dynamically Creating a Class(动态创建类)
+---------
+&emsp;&emsp;正常情况下创建一个类示例如下：
+```objc
+@interface Product : NSObject
+
+@property (readonly) NSString *name;
+@property (readonly) double price;
+
+- (instancetype)initWithName:(NSString *)name price:(double)price;
+@end
+
+@implementation Product
+
+- (instancetype)initWithName:(NSString *)name price:(double)price
+{
+    self = [super init];
+    if(!self) {
+        return nil;
+    }
+    self.name = name;
+    self.price = price;
+    return self;
+}
+
+@end
+```
+&emsp;&emsp;而利用runtime动态创建一个类方法如下:
+```objc
+//allocate
+Class c = objc_allocateClassPair([NSObject class], "Product", 0);
+//添加属性
+class_addIvar(c, "name", sizeof(id), log2(sizeof(id)), @encode(id));
+class_addIvar(c, "price", sizeof(double), sizeof(double), @encode(double));
+
+Ivar nameIvar = class_getInstanceVariable(c, "name");
+
+ptrdiff_t priceIvarOffset = ivar_getOffset(class_getInstanceVariable(c, "price"));
+
+IMP initIMP = imp_implementationWithBlock(^(id self, NSString *name, double price)
+{
+    object_setIvar(self, nameIvar, name);
+    char *ptr = ((char *)(__bridge void *)self) + priceIvarOffset;
+    memcpy(ptr, &price, sizeof(price));
+    return self;
+});
+
+const char *initTypes = [[NSString stringWithFormat:@"%s%s%s%s%s%s",@encode(id), @encode(id), @encode(SEL), @encode(id), @encode(id),@encode(NSUInteger)] UTF8String];
+//添加方法
+class_addMethod(c,
+    @selector(initWithFirstName:lastName:age:),
+    initIMP,
+    initTypes);
+
+IMP nameIMP = imp_implementationWithBlock(^(id self) {
+    return object_getIvar(self, nameIvar);
+});
+
+const char *nameTypes =[[NSString stringWithFormat:@"%s%s%s",@encode(id), @encode(id), @encode(SEL)] UTF8String];
+
+class_addMethod(c, @selector(name), nameIMP, nameTypes);
+
+IMP priceIMP = imp_implementationWithBlock(^(id self) {
+    char *ptr = ((char *)(__bridge void *)self) + priceIvarOffset;
+    double price;
+    memcpy(&price, ptr, sizeof(price));
+    return price;
+});
+
+const char *priceTypes = [[NSString stringWithFormat:@"%s%s%s", @encode(double), @encode(id), @encode(SEL)] UTF8String];
+
+class_addMethod(c, @selector(age), priceIMP, priceTypes);
+//注册类
+objc_registerClassPair(c);
+
+//使用
+id myobjc = objc_msgSend(c, @selector(alloc));
+myobjc = objc_msgSend(myobjc, @selector(initWithFirstName:lastName:age:),@"first",@"last",25);
+NSLog(@"%@",objc_msgSend(myobjc,@selector(name)));
+NSLog(@"%d",objc_msgSend(myobjc,@selector(age)));
+```
+
+本文参考:
+
+1、《CFHipsterRef: Low-Level Programming on IOS and Mac OS X》
+
+2、[iOS runtime实战应用：Method Swizzling](http://www.jianshu.com/p/3efc3e94b14c)
