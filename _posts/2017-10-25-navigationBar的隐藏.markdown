@@ -5,14 +5,14 @@ date: 2017-10-25 15:32:24.000000000 +08:00
 ---
 
 
-通用方法
-------------
+通用方法
+-----------
 &emsp;&emsp;一般情况下使用setNavigationBarHidden来隐藏导航栏，但在多个ViewController之间切换时来显示隐藏导航栏，会出现闪动的情况，以下来介绍另外一种方式来隐藏。
 ```objc
 - (void)setNavigationBarHidden:(BOOL)hidden animated:(BOOL)animated;
 ```
 setTranslucent设置透明
-------------
+-----------
 &emsp;&emsp;函数解释如下
 
 ```
@@ -49,7 +49,7 @@ If you set this property to NO on a navigation bar with a translucent custom bac
         self.navigationController.navigationBar.shadowImage = [self imageWithColor:backColor];
 ```
 
-同一界面动态显示与隐藏
+同一界面动态显示与隐藏
 ----------
 &emsp;&emsp;利用上述设置透明的方法可以同一个界面实现导航栏的动态显示与隐藏，但是在显示导航栏的时候不宜将translucent设置为NO，这样会造成在这个界面出现闪动的问题。
 
