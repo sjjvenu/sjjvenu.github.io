@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 2017-10-25-navigationBar的隐藏
+title: navigationBar的隐藏
 date: 2017-10-25 15:32:24.000000000 +08:00
 ---
 
