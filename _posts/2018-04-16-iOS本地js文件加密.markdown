@@ -156,10 +156,6 @@ self.task = [session dataTaskWithRequest:self.request];
 }
 
 ```
-下面是代码效果图
-
-![Aaron Swartz](https://github.com/LiuShuoyu/HybirdWKWebVIew/blob/master/jpeg/WechatIMG1.jpeg)
-![Aaron Swartz](https://github.com/LiuShuoyu/HybirdWKWebVIew/blob/master/jpeg/WechatIMG2.jpeg)
 
 
 &emsp;&emsp;以上重定向内容转自网络。
@@ -170,14 +166,14 @@ self.task = [session dataTaskWithRequest:self.request];
 
 #### 文件加密
 
-&emsp;&emsp;处理完重定向以后，下面我们把重点放在文件的加密上。由于传统的混淆方式，js文件仍然以明文的方式存在，且破解难度较小，这是因为浏览器的限制，只能加载能够识别的明文。而现在我们可以把js处理成任意加密方式，只要在重定向的时候能找到相应的文件并且解析出来。以下提供一种可以成功加密解密方式。
+&emsp;&emsp;处理完重定向以后，下面我们把重点放在文件的加密上。由于传统的混淆方式，js文件仍然以明文的方式存在，且破解难度较小，这是因为浏览器的限制，只能加载能够识别的明文。而现在我们可以把js处理成任意加密方式，只要在重定向的时候能找到相应的文件并且解析出来。以下提供一种可以成功加密解密方式。
 
 * 将js文件内容进行base64编码
 * 用ase之类的加密方式把base64编码后的内容进行加密，此时需要读取到内存中，然后以二进制的方式写入到磁盘，此时文件已经完成加密。外部人员打开只会显示此文件是一个二进制文件，从而有效地对文件进行了加密
-* 读取js文件时（默认读取的是已经利用上述步骤加密好的文件），首先进行解密得到base64字符串，然后[NSURL URLWithString:[NSString stringWithFormat:@"data:text/html;charset=UTF-8;base64,%@",strEncode]]方式获取NSURL，这样就能成功的被浏览器识别。
+* 读取js文件时（默认读取的是已经利用上述步骤加密好的文件），首先进行解密得到base64字符串，然后[NSURL URLWithString:[NSString stringWithFormat:@"data:text/html;charset=UTF-8;base64,%@",strEncode]]方式获取NSURL，这样就能成功的被浏览器识别。
 
 
-###接受启发的作者的github
+### 接受启发的作者的github
 
 github：<a href="https://github.com/yeatse/">Yeatse CC</a>
 
