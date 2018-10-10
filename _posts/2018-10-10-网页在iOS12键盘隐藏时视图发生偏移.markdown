@@ -32,8 +32,7 @@ date: 2018-10-10 15:32:24.000000000 +08:00
 
 ![WX20181010-143244.png](https://i.loli.net/2018/10/10/5bbd9d17766c5.png)
 
-###解决方案
-
+解决方案
 -----------
 
 &emsp;&emsp;在github上面找到类似问题<a href="https://github.com/ionic-team/ionic/issues/15824">UI breaks when OSKB displays on iOS 12 - Ionic 4 Beta 7, Capacitor 1 beta-8</a>，<a href="http://www.openradar.me/44655885">ionic-team/capacitor#814</a>，稍有不同的时网页使用了viewport-fit=cover的属性，而我这里碰到的问题是没有使用这个属性也出现了视图偏移未回弹到正确位置。问题中提到的两个解决方案，一个是去掉viewport-fit=cover和使用UIWebView,我测试过UIWebView确实可以保证正常，而viewport-fit=cover我并未使用这个属性，可供有使用这个属性的参考。我这里有第三种解决方案，即在iOS12下恢复webview的scrollview的UIScrollViewContentInsetAdjustmentAutomatic属性:
