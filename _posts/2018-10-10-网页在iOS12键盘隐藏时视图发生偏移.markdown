@@ -1,0 +1,52 @@
+---
+layout: post
+title: 网页在iOS12键盘隐藏时视图发生偏移
+date: 2018-10-10 15:32:24.000000000 +08:00
+---
+
+
+背景
+-----------
+
+&emsp;&emsp;在iOS系统中会经常嵌入网页，在键盘输入的时候为了不遮挡键盘为使视图居中显示。但在此时在不同版本系统下或者使用不同的WebView(UIWebView或者WKWebView),会造成一些视图的偏移问题，以下介绍的是其中一个问题。
+
+
+问题描述
+-----------
+
+&emsp;&emsp;在iOS12系统下，使用WKWebView，并把该WKWebView的scrollview的contentInsetAdjustmentBehavior设置为UIScrollViewContentInsetAdjustmentNever。这一操作的原因是因为在iOS11的时候，初期适配为了使用MJRefresh，不设置这一属性会造成网页回弹有问题。在这种历史原因下，随着iOS12的推出，此时却出现了网页适配问题，即打开键盘的时候由于为了避免遮挡，视图会上移，输入完成后键盘隐藏，此时视图却没有回到正常的位置。如下图所示：
+
+&emsp;&emsp;使用前:
+
+![Simulator Screen Shot - iPhone X - 2018-10-10 at 14.25.30.png](https://i.loli.net/2018/10/10/5bbd9b6b776ef.png)
+
+&emsp;&emsp;打开键盘时
+
+![Simulator Screen Shot - iPhone X - 2018-10-10 at 14.27.14.png](https://i.loli.net/2018/10/10/5bbd9bd36ff38.png)
+
+&emsp;&emsp;键盘收起后
+
+![Simulator Screen Shot - iPhone X - 2018-10-10 at 14.28.22.png](https://i.loli.net/2018/10/10/5bbd9c0d02782.png)
+
+&emsp;&emsp;查看视图布局，发现此时webview并未发生移动，而是里面的视图发生了移动，未回到正确的位置。
+
+![WX20181010-143244.png](https://i.loli.net/2018/10/10/5bbd9d17766c5.png)
+
+###解决方案
+
+-----------
+
+&emsp;&emsp;在github上面找到类似问题<a href="https://github.com/ionic-team/ionic/issues/15824">UI breaks when OSKB displays on iOS 12 - Ionic 4 Beta 7, Capacitor 1 beta-8</a>，<a href="http://www.openradar.me/44655885">ionic-team/capacitor#814</a>，稍有不同的时网页使用了viewport-fit=cover的属性，而我这里碰到的问题是没有使用这个属性也出现了视图偏移未回弹到正确位置。问题中提到的两个解决方案，一个是去掉viewport-fit=cover和使用UIWebView,我测试过UIWebView确实可以保证正常，而viewport-fit=cover我并未使用这个属性，可供有使用这个属性的参考。我这里有第三种解决方案，即在iOS12下恢复webview的scrollview的UIScrollViewContentInsetAdjustmentAutomatic属性:
+
+```Obj-c
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 // iOS 12.0 supported
+    if (@available(iOS 12.0, *)) {
+        webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentAutomatic;
+    } else {
+        // Fallback on earlier versions
+    }
+#else
+    // Pre-iOS 7 code here
+#endif
+```
+
